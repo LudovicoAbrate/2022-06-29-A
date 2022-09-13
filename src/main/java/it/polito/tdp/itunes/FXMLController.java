@@ -7,7 +7,9 @@ package it.polito.tdp.itunes;
 import java.net.URL;
 import java.util.ResourceBundle;
 import it.polito.tdp.itunes.model.Album;
+import it.polito.tdp.itunes.model.ArchiGrafo;
 import it.polito.tdp.itunes.model.Model;
+import it.polito.tdp.itunes.model.Vertici;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -35,7 +37,7 @@ public class FXMLController {
     private Button btnPercorso; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbA1"
-    private ComboBox<?> cmbA1; // Value injected by FXMLLoader
+    private ComboBox<Vertici> cmbA1; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbA2"
     private ComboBox<?> cmbA2; // Value injected by FXMLLoader
@@ -52,6 +54,17 @@ public class FXMLController {
     @FXML
     void doCalcolaAdiacenze(ActionEvent event) {
     	
+    	Vertici v1 = cmbA1.getValue();
+    	
+    	
+    	
+    	txtResult.clear();
+    	
+    	for(ArchiGrafo a :model.getSuccessori(v1)) {
+    		txtResult.appendText(a.getVertice().getNome() + ", bilancio = " +a.getBilancio());
+    	}
+    	
+    	
     }
 
     @FXML
@@ -61,6 +74,23 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	
+    	String ncanzoni= txtN.getText();
+    	Integer canzoni;
+    	try {
+			   canzoni= Integer.parseInt(ncanzoni);
+		   } catch(NumberFormatException ne) {
+			   txtResult.appendText("le Canzoni devono essere un numero");
+			   return;
+		   }
+    	
+    	this.model.creaGrafo( canzoni);
+    	
+		   txtResult.appendText("grafo creato: "+"\n");
+		   txtResult.appendText("# VERTICI: "+this.model.nVertici()+"\n");
+		   txtResult.appendText("# ARCHI: "+this.model.nArchi()+"\n");
+		   
+		   cmbA1.getItems().addAll(model.VerticiGrafo(canzoni));
     	
     }
 
@@ -81,4 +111,6 @@ public class FXMLController {
     public void setModel(Model model) {
     	this.model = model;
     }
+    
+    
 }

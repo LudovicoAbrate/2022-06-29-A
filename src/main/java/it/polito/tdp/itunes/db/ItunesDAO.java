@@ -13,6 +13,7 @@ import it.polito.tdp.itunes.model.Genre;
 import it.polito.tdp.itunes.model.MediaType;
 import it.polito.tdp.itunes.model.Playlist;
 import it.polito.tdp.itunes.model.Track;
+import it.polito.tdp.itunes.model.Vertici;
 
 public class ItunesDAO {
 	
@@ -138,5 +139,39 @@ public class ItunesDAO {
 		}
 		return result;
 	}
+	
+	public List<Vertici> getVertici(int numero){
+		
+		String sql = "select distinct a.albumid as a, a.title as title, COUNT( t.albumid) as canzoni "
+				+ "from track t , album a  "
+				+ "where a.albumid = t.albumid "
+				+ "group by a,title "
+				+ "order by canzoni asc ";
+		
+List<Vertici> result = new LinkedList<>();
+		
+		try {
+			Connection conn = DBConnect.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			
+			ResultSet res = st.executeQuery();
+
+			while (res.next()) {
+				
+				if(numero < res.getInt("canzoni")) {
+				result.add(new Vertici(res.getInt("a"), res.getString("title"),res.getDouble("canzoni")));
+				}
+		}
+			
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("SQL Error");
+		}
+		return result;
+	}
+		
+	
+	
 	
 }
